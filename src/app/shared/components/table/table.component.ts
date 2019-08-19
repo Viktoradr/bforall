@@ -1,5 +1,7 @@
 import { Component, OnInit, Output, Input, EventEmitter, OnChanges } from '@angular/core';
 import { TableService } from './table.service';
+import { stringify } from '@angular/compiler/src/util';
+import { concat } from 'rxjs';
 
 export interface Header {
   title: string,
@@ -44,17 +46,35 @@ export class TableComponent implements OnInit, OnChanges {
   ngOnChanges(changes: import("@angular/core").SimpleChanges): void {
     this.rows = this.rows == undefined ? 10 : this.rows;
 
-    for (let obj of this.data) {
+    this.data.forEach((obj: any) => {
       let temp: any = {};
 
       for (let header of this.headers) {
-        temp[header.param] = obj[header.param];
+        var hasDot = header.param.indexOf('.');
+
+        if (hasDot != -1) {
+          var v = header.param.split('.');
+          
+          if (Array.isArray(obj[v[0]])) {
+            if (typeof obj[v[0]][0] === 'object') {
+              temp[v[0]] = '';
+              for (let itemArray of obj[v[0]]) {
+                console.log(itemArray[v[1]]);
+                temp[v[0]] += `${itemArray[v[1]]}, `; 
+              }
+            }
+            else temp[v[0]] = obj[v[0]];
+          }
+          else if (typeof obj[v[0]] === 'object') temp[v[0]] = obj[v[0]][v[1]];
+        }
+        else temp[header.param] = obj[header.param];
       }
-
+        
       this.listSearch.push(temp);
-    }
-    this.list = this.listSearch;
+    });
 
+    this.list = this.listSearch;
+    //console.log(this.listSearch)
     this.setPage(1);
   }
 
@@ -69,6 +89,17 @@ export class TableComponent implements OnInit, OnChanges {
 
   searching(value: any) {
     this.filter(value);
+  }
+
+  setValue(param: any, obj: any) {
+    var hasDot = param.includes('.');
+
+    if (hasDot) {
+      var v = param.split('.');
+      if (Array.isArray(obj[v[0]])) return obj[v[0]];
+      else if (obj[param] == undefined) return obj[v[0]];
+    }
+    else return obj[param];
   }
 
   setPage(page: number) {

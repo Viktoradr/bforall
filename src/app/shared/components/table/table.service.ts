@@ -10,12 +10,12 @@ export class TableService {
         let totalPages = Math.ceil(totalItems / pageSize);
 
         // ensure current page isn't out of range
-        if (currentPage < 1) { 
-            currentPage = 1; 
-        } else if (currentPage > totalPages) { 
-            currentPage = totalPages; 
+        if (currentPage < 1) {
+            currentPage = 1;
+        } else if (currentPage > totalPages) {
+            currentPage = totalPages;
         }
-        
+
         let startPage: number, endPage: number;
         if (totalPages <= 10) {
             // less than 10 total pages so show all
@@ -54,5 +54,44 @@ export class TableService {
             endIndex: endIndex,
             pages: pages
         };
+    }
+
+    checkOne(obj: any, list: any[], listSelected: any[]): boolean {
+        obj.selected = !obj.selected;
+        listSelected = list.filter((x: any) => x.selected);
+        return false;
+    }
+
+    checkAll(selectAll: boolean, list: any[], listSelected: any[]): boolean {
+        list.forEach((element: any) => element.selected = !selectAll);
+        listSelected = list.filter((x: any) => x.selected);
+        return !selectAll;
+    }
+
+    setValue(param: any, obj: any) {
+        var hasDot = param.includes('.');
+
+        if (hasDot) {
+            var v = param.split('.');
+
+            if (Array.isArray(obj[v[0]])){
+                var itens = [];
+                obj[v[0]].forEach((element: any) => {
+                    console.log(element[v[1]])
+                    //itens.push()
+                });
+                return obj[v[0]];
+            }
+            else if (obj[param] == undefined) {
+                return obj[v[0]];
+            }
+        }
+        else {
+            if (Array.isArray(obj[param])) {
+                return obj[param];
+            }
+            else return obj[param];
+        }
+
     }
 }

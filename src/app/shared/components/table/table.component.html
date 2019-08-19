@@ -23,7 +23,7 @@
   <tbody>
     <tr *ngFor="let item of listSearch; let i=index">
       <td *ngFor="let obj of headers | keyvalue">
-        {{item[obj.value.param]}}
+        {{ setValue(obj.value.param, item) }}
       </td>
     </tr>
   </tbody>
