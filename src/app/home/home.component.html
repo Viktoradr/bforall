@@ -1,0 +1,13 @@
+<div class="card">
+    <div class="card-body">
+        <v-table
+            [keyId]="keyId"
+            [data]="lista"
+            [headers]="header"
+            [pagination]="true"
+            [sortable]="false"
+            [searchable]="true"
+            (status)="statusTable($event)"
+        ></v-table>
+    </div>
+</div>

@@ -1,0 +1,59 @@
+<ng-container *ngIf="searchable">
+  <div class="form-row">
+    <div class="input-group col-xs-12 col-md-4 offset-md-8 mb-3">
+      <input type="text" class="form-control" placeholder="Search for something" aria-label="Recipient's username"
+        aria-describedby="button-addon2" [(ngModel)]="search" #input (input)="searching(input.value)">
+      <div class="input-group-append">
+        <button class="btn btn-secondary d-flex align-items-center" type="button" id="button-addon2">
+          <i class="material-icons">search</i>
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+
+<table class="table table-dark">
+  <thead>
+    <tr>
+      <th scope="col" *ngFor="let item of headers">{{item.title}}</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let item of listSearch; let i=index">
+      <td *ngFor="let obj of headers | keyvalue">
+        {{item[obj.value.param]}}
+      </td>
+    </tr>
+  </tbody>
+
+</table>
+
+<ng-container *ngIf="pagination">
+  <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+    <div class="btn-group mr-2" role="group" aria-label="First group">
+      <button type="button" class="btn btn-secondary d-flex align-items-center p-2"
+        [ngClass]="{disabled:pager.currentPage === 1}" (click)="setPage(1)">
+        <i class="material-icons">first_page</i>
+      </button>
+      <button type="button" class="btn btn-secondary d-flex align-items-center p-2"
+        [ngClass]="{disabled:pager.currentPage === 1}" (click)="setPage(pager.currentPage - 1)">
+        <i class="material-icons">chevron_left</i>
+      </button>
+
+      <button type="button" class="btn btn-secondary d-flex align-items-center"
+        [ngClass]="{active:pager.currentPage === page}" *ngFor="let p of pager.pages"
+        (click)="setPage(p)">{{p}}</button>
+
+      <button type="button" class="btn btn-secondary d-flex align-items-center p-2"
+        [ngClass]="{disabled:pager.currentPage === pager.totalPages}" (click)="setPage(pager.currentPage + 1)">
+        <i class="material-icons">chevron_right</i>
+      </button>
+      <button type="button" class="btn btn-secondary d-flex align-items-center p-2"
+        [ngClass]="{disabled:pager.currentPage === pager.totalPages}" (click)="setPage(pager.totalPages)">
+        <i class="material-icons">last_page</i>
+      </button>
+    </div>
+  </div>
+</ng-container>
