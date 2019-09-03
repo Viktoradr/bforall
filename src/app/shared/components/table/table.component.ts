@@ -1,11 +1,18 @@
 import { Component, OnInit, Output, Input, EventEmitter, OnChanges } from '@angular/core';
 import { TableService } from './table.service';
-import { stringify } from '@angular/compiler/src/util';
-import { concat } from 'rxjs';
 
 export interface Header {
   title: string,
-  param: string
+  param: string,
+  actions?: [
+    {
+      title: string,
+      handler: any,
+      icon: string,
+      class: string,
+      isButton: boolean
+    }
+  ]
 }
 
 @Component({
@@ -45,37 +52,31 @@ export class TableComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: import("@angular/core").SimpleChanges): void {
     this.rows = this.rows == undefined ? 10 : this.rows;
+    this.mapList();
+    this.setPage(1);
+  }
 
+  mapList() {
     this.data.forEach((obj: any) => {
-      let temp: any = {};
+      let temp: any = {
+        actions: []
+      };
 
       for (let header of this.headers) {
-        var hasDot = header.param.indexOf('.');
-
-        if (hasDot != -1) {
-          var v = header.param.split('.');
-          
-          if (Array.isArray(obj[v[0]])) {
-            if (typeof obj[v[0]][0] === 'object') {
-              temp[v[0]] = '';
-              for (let itemArray of obj[v[0]]) {
-                console.log(itemArray[v[1]]);
-                temp[v[0]] += `${itemArray[v[1]]}, `; 
-              }
-            }
-            else temp[v[0]] = obj[v[0]];
-          }
-          else if (typeof obj[v[0]] === 'object') temp[v[0]] = obj[v[0]][v[1]];
+        //console.log(header.actions, header)
+        if (header.actions != undefined) {
+          temp.actions = header.actions;
         }
-        else temp[header.param] = obj[header.param];
+        else
+          temp = this.mapear(temp, obj, header);
       }
         
       this.listSearch.push(temp);
     });
 
+    console.log(this.listSearch)
+
     this.list = this.listSearch;
-    //console.log(this.listSearch)
-    this.setPage(1);
   }
 
   feedback() {
@@ -91,15 +92,16 @@ export class TableComponent implements OnInit, OnChanges {
     this.filter(value);
   }
 
-  setValue(param: any, obj: any) {
-    var hasDot = param.includes('.');
+  setValue(header: any, obj: any) {
+  
+      var hasDot = header.param.includes('.');
 
-    if (hasDot) {
-      var v = param.split('.');
-      if (Array.isArray(obj[v[0]])) return obj[v[0]];
-      else if (obj[param] == undefined) return obj[v[0]];
-    }
-    else return obj[param];
+      if (hasDot) {
+        var v = header.param.split('.');
+        if (Array.isArray(obj[v[0]])) return obj[v[0]];
+        else if (obj[header.param] == undefined) return obj[v[0]];
+      }
+      else return obj[header.param];
   }
 
   setPage(page: number) {
@@ -121,14 +123,41 @@ export class TableComponent implements OnInit, OnChanges {
     return item[key];
   }
 
+  mapear(temp: any, obj: any, header: any) : any {
+    var hasDot = header.param.indexOf('.');
+
+    if (hasDot != -1) {
+      var v = header.param.split('.');
+      
+      if (Array.isArray(obj[v[0]])) {
+        if (typeof obj[v[0]][0] === 'object') {
+          temp[v[0]] = '';
+          for (let itemArray of obj[v[0]]) {
+            //console.log(itemArray[v[1]]);
+            temp[v[0]] += `${itemArray[v[1]]}, `; 
+          }
+        }
+        else temp[v[0]] = obj[v[0]];
+      }
+      else if (typeof obj[v[0]] === 'object') temp[v[0]] = obj[v[0]][v[1]];
+    }
+    else temp[header.param] = obj[header.param];
+
+    return temp;
+  }
+
   filter(input: any) {
     let lista = [];
 
     this.list.forEach((item: any) => {
       let search = false;
 
+      // Pensar em alguma formar de juntar todo o conteudo da lista e fazer o search
       for (let header of this.headers) {
-        search = search ? true : item[header.param].includes(input);
+        if (header.actions == undefined) {
+          let t = header.param.split('.');
+          search = search ? true : item[t[0]].includes(input);
+        }
       }
 
       if (search)

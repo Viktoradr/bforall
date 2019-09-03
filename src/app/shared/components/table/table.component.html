@@ -12,7 +12,6 @@
   </div>
 </ng-container>
 
-
 <table class="table table-dark">
   <thead>
     <tr>
@@ -21,11 +20,33 @@
   </thead>
 
   <tbody>
-    <tr *ngFor="let item of listSearch; let i=index">
-      <td *ngFor="let obj of headers | keyvalue">
-        {{ setValue(obj.value.param, item) }}
+
+    <tr class="text-center" *ngIf="listSearch.length == 0 else listSearchTemplate;">
+      <td colspan="4">
+        Any items to show
       </td>
     </tr>
+
+    <ng-template #listSearchTemplate>
+      <tr *ngFor="let item of listSearch; let i=index">
+        <ng-container *ngFor="let obj of headers | keyvalue">
+          <td *ngIf="obj.value.actions == undefined">
+            {{setValue(obj.value, item)}}
+          </td>
+          <td *ngIf="obj.value.actions != undefined" class="d-flex justify-content-around align-items-center">
+            <ng-container *ngFor="let action of obj.value.actions">
+              <button *ngIf="action.isButton" type="button" class="btn btn-sm" [ngClass]="'btn-' + action.class"
+                (click)="action.handler(item, i)">
+                <i class="material-icons" [title]="action.title">{{action.icon}}</i>
+              </button>
+              <i *ngIf="!action.isButton" class="material-icons pointer" [ngClass]="'text-'+ action.class"
+                (click)="action.handler(item, i)" [title]="action.title">{{action.icon}}</i>
+            </ng-container>
+          </td>
+        </ng-container>
+      </tr>
+    </ng-template>
+
   </tbody>
 
 </table>

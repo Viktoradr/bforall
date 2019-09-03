@@ -4,9 +4,9 @@ import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 
 const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'home' },
+  { path: '', pathMatch: 'full', redirectTo: 'pesquisa' },
   { path: 'home', component: HomeComponent },
-  // { path: 'home', loadChildren: () => import('./home/admin.module').then(m => m.AdminModule) },
+  { path: 'pesquisa', loadChildren: () => import('./pesquisa-reativa/pesquisa-reativa.module').then(m => m.PesquisaReativaModule) },
 ];
 
 @NgModule({

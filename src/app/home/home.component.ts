@@ -30,6 +30,38 @@ export class HomeComponent implements OnInit {
       {
         title: "Array",
         param: "Lista.param"
+      },
+      {
+        title: "Actions",
+        actions: [
+          {
+            title: "Adicionar",
+            handler: (item: any, index: number) => {
+              this.add(item, index)
+            },
+            icon: "add",
+            class: "success",
+            isButton: false
+          },
+          {
+            title: "Remover",
+            handler: (item: any, index: number) => {
+              this.remover(item, index)
+            },
+            icon: "delete",
+            class: "danger",
+            isButton: true
+          },
+          {
+            title: "Editar",
+            handler: (item: any, index: number) => {
+              this.editar(item, index)
+            },
+            icon: "edit",
+            class: "primary",
+            isButton: true
+          }
+        ]
       }
     ];
 
@@ -82,4 +114,16 @@ export class HomeComponent implements OnInit {
     console.log(status)
   }
 
+  add(item: any, index: number) {
+    console.log('add', item)
+  }
+  
+  remover(item: any, index: number) {
+    console.log('remover', item)
+    this.lista.splice(index, 1);
+  }
+
+  editar(item: any, index: number) {
+    console.log('editar', item)
+  }
 }
